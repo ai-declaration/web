@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ProjectFields from "@/components/generator/project-fields";
 import AiEngagement from "@/components/generator/ai-engagement";
+import ComplianceSection from "@/components/generator/compliance-section";
 import type { AideclDeclaration, AideclTool, FormErrors } from "@/lib/aidecl-types";
 
 const initialState: AideclDeclaration = {
@@ -16,6 +17,7 @@ const initialState: AideclDeclaration = {
 export default function GeneratorPage() {
   const [formData, setFormData] = useState<AideclDeclaration>(initialState);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [complianceMode, setComplianceMode] = useState("standard");
 
   const updateField = (path: string, value: unknown) => {
     setFormData((prev) => {
@@ -45,6 +47,12 @@ export default function GeneratorPage() {
       } else if (path.startsWith("ai_usage.code_proportion.")) {
         const propKey = path.split(".").pop()!;
         next.ai_usage.code_proportion = { ...next.ai_usage.code_proportion, [propKey]: value };
+      } else if (path.startsWith("compliance.")) {
+        const compKey = path.replace("compliance.", "");
+        next.compliance = { ...next.compliance, [compKey]: value as string };
+      } else if (path.startsWith("governance.")) {
+        const govKey = path.replace("governance.", "");
+        next.governance = { ...next.governance, [govKey]: value as string };
       }
 
       return next;
@@ -65,6 +73,13 @@ export default function GeneratorPage() {
           values={formData.ai_usage}
           onChange={updateField}
           errors={errors}
+        />
+        <ComplianceSection
+          compliance={formData.compliance || {}}
+          governance={formData.governance || {}}
+          mode={complianceMode}
+          onModeChange={setComplianceMode}
+          onChange={updateField}
         />
       </div>
       <aside className="lg:col-span-1">
