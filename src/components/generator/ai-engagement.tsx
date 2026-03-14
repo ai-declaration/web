@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import ToolEntry from "./tool-entry";
 import type { AideclAiUsage, AideclScope, FormErrors } from "@/lib/aidecl-types";
 
 interface AiEngagementProps {
@@ -149,19 +150,22 @@ export default function AiEngagement({ values, onChange, errors }: AiEngagementP
                   </Badge>
                 ))}
               </div>
+              <button
+                onClick={() => onChange("ai_usage.addTool", { name: "", type: "assistant", hosting: "cloud" })}
+                className="text-sm text-accent hover:underline"
+              >
+                + Add Custom Tool
+              </button>
               {values.tools && values.tools.length > 0 && (
-                <div className="mt-2 space-y-1">
+                <div className="mt-2 space-y-2">
                   {values.tools.map((tool, i) => (
-                    <div key={i} className="flex items-center justify-between rounded border border-border px-3 py-1.5 text-sm">
-                      <span>{tool.name} ({tool.type})</span>
-                      <button
-                        onClick={() => onChange("ai_usage.removeTool", i)}
-                        className="text-muted-foreground hover:text-error"
-                        aria-label={`Remove ${tool.name}`}
-                      >
-                        x
-                      </button>
-                    </div>
+                    <ToolEntry
+                      key={i}
+                      tool={tool}
+                      index={i}
+                      onChange={onChange}
+                      onRemove={() => onChange("ai_usage.removeTool", i)}
+                    />
                   ))}
                 </div>
               )}

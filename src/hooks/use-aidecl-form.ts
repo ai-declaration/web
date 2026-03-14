@@ -35,6 +35,13 @@ function reducer(state: AideclDeclaration, action: Action): AideclDeclaration {
       else if (path.startsWith("ai_usage.scope.")) {
         const key = path.split(".").pop()!;
         next.ai_usage.scope = { ...next.ai_usage.scope, [key]: value };
+      } else if (path.match(/^ai_usage\.tools\.\d+\./)) {
+        const parts = path.split(".");
+        const idx = parseInt(parts[2]);
+        const field = parts[3];
+        if (next.ai_usage.tools && next.ai_usage.tools[idx]) {
+          (next.ai_usage.tools[idx] as Record<string, unknown>)[field] = value;
+        }
       } else if (path.startsWith("ai_usage.code_proportion.")) {
         const key = path.split(".").pop()!;
         next.ai_usage.code_proportion = { ...next.ai_usage.code_proportion, [key]: value };
