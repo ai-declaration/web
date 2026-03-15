@@ -16,6 +16,7 @@ interface SidebarPreviewProps {
 
 export default function SidebarPreview({ formData, issues, isValid }: SidebarPreviewProps) {
   const [copied, setCopied] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const declaration = useMemo(() => buildAideclDeclaration(formData), [formData]);
   const yamlPreview = useMemo(() => toYaml(declaration), [declaration]);
@@ -28,7 +29,7 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "aidecl.yaml";
+    a.download = "caidr.yaml";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -39,9 +40,23 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "aidecl.json";
+    a.download = "caidr.json";
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleShareLink = async () => {
+    const encoded = btoa(yamlPreview);
+    if (encoded.length > 4096) {
+      alert("Content too large for shareable link (max 4KB encoded)");
+      return;
+    }
+    const url = `${window.location.origin}/generator/?v=${encodeURIComponent(encoded)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2000);
+    } catch { /* clipboard unavailable */ }
   };
 
   const handleCopy = async () => {
@@ -98,6 +113,14 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
             </Button>
           </TooltipTrigger>
           <TooltipContent>Copy YAML to clipboard</TooltipContent>
+        </Tooltip>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button size="sm" variant="outline" onClick={handleShareLink}>
+              {linkCopied ? "Link Copied!" : "Share"}
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Copy shareable link</TooltipContent>
         </Tooltip>
       </div>
 

@@ -3,7 +3,7 @@ import type { AideclDeclaration } from "./aidecl-types";
 function stripEmpty(obj: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (value === undefined || value === null || value === "") continue;
+    if (value === undefined || value === null || value === "" || value === 0) continue;
     if (typeof value === "object" && !Array.isArray(value)) {
       const nested = stripEmpty(value as Record<string, unknown>);
       if (Object.keys(nested).length > 0) result[key] = nested;
