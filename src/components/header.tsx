@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "./theme-toggle";
 
 const navItems = [
   { href: "/generator", label: "Generator" },
@@ -27,6 +28,7 @@ export default function Header() {
           </div>
           <span className="text-lg font-semibold">AI Declaration</span>
         </Link>
+        <div className="flex items-center gap-3">
         <nav role="tablist" aria-label="Main navigation" className="flex gap-1 overflow-x-auto">
           {navItems.map((item) => {
             const isActive = pathname?.startsWith(item.href);
@@ -47,6 +49,8 @@ export default function Header() {
             );
           })}
         </nav>
+        <ThemeToggle />
+        </div>
       </div>
     </header>
   );
