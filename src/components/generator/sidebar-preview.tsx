@@ -68,7 +68,7 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
   };
 
   return (
-    <div className="sticky top-20 space-y-4">
+    <div className="space-y-4 lg:sticky lg:top-20">
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Preview</h2>
         <Badge className={`${statusColor} text-white`}>
