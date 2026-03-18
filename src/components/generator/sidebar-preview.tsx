@@ -29,7 +29,7 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "caidr.yaml";
+    a.download = "aidecl.yaml";
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -40,7 +40,7 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "caidr.json";
+    a.download = "aidecl.json";
     a.click();
     URL.revokeObjectURL(url);
   };

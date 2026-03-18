@@ -27,7 +27,5 @@ export function buildAideclDeclaration(formData: AideclDeclaration): Record<stri
     signature: stripEmpty(formData.signature as unknown as Record<string, unknown>),
   });
 
-  console.log('build result:', JSON.stringify(result, null, 2));
-
   return result;
 }
