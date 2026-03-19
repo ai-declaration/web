@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# aidecl-web
+
+Web-based tool for creating, validating, and browsing [AI Declaration](https://github.com/ai-declaration) files. All processing happens client-side -- no data leaves your browser.
+
+## Features
+
+- **Generator** -- Build aidecl.yaml declarations through a guided form with live YAML preview, download, copy, and shareable links
+- **Validator** -- Paste or upload YAML/JSON files to validate against the AI Declaration schema (Draft 2020-12)
+- **Library** -- Browse 8 reference examples covering minimal, web app, research, high-risk, enterprise, and more
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org) (App Router, static export)
+- [React 19](https://react.dev)
+- [TypeScript](https://typescriptlang.org)
+- [Tailwind CSS v4](https://tailwindcss.com)
+- [shadcn/ui](https://ui.shadcn.com) (Radix UI primitives)
+- [ajv](https://ajv.js.org) for JSON Schema validation
+- [js-yaml](https://github.com/nodeca/js-yaml) for YAML parsing
+- Self-hosted Inter font (no external requests)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000 in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Building
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Produces a static export in `out/`. No server required -- deploy to any static hosting.
 
-To learn more about Next.js, take a look at the following resources:
+## Deploy
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Works with any static hosting:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **GitHub Pages**: deploy the `out/` folder
+- **Netlify**: build command `npm run build`, publish directory `out`
+- **Vercel**: import project, framework auto-detected
+- **Cloudflare Pages**: build command `npm run build`, output directory `out`
 
-## Deploy on Vercel
+## Related Projects
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [schema](https://github.com/ai-declaration/schema) -- The specification
+- [cli](https://github.com/ai-declaration/cli) -- CLI tool
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Roadmap
+
+- Syntax highlighting in code preview
+- Inline YAML linting
+- Diff view between versions
+- Guided wizard mode
+- Print stylesheet for declarations
+- PWA support
+
+## Privacy
+
+All processing is client-side only. No data leaves your browser. No analytics, no tracking, no cookies.
+
+## License
+
+Apache-2.0. See LICENSE and NOTICE.
