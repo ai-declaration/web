@@ -38,6 +38,8 @@ export default function Header() {
                 href={item.href}
                 role="tab"
                 aria-selected={isActive}
+                aria-current={isActive ? "page" : undefined}
+                tabIndex={0}
                 className={`whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-colors sm:px-3 sm:py-1.5 ${
                   isActive
                     ? "bg-accent text-white"

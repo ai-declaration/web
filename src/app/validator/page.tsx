@@ -9,7 +9,7 @@ export default function ValidatorPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Declaration Validator</h1>
+      <h1 className="text-2xl font-bold" id="validator-heading">Declaration Validator</h1>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <CodeEditor value={inputText} onChange={setInputText} />
         <ValidationResultDisplay inputText={inputText} />

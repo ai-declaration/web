@@ -19,10 +19,12 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
         <CardTitle>Reference Library</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2" role="listbox" aria-label="Example templates">
           {examples.map((ex) => (
             <Badge
               key={ex.key}
+              role="option"
+              aria-selected={ex.key === selected}
               variant={ex.key === selected ? "default" : "outline"}
               className={`cursor-pointer ${
                 ex.key === selected
@@ -30,6 +32,8 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
                   : "hover:bg-muted"
               }`}
               onClick={() => onSelect(ex.key)}
+              tabIndex={0}
+              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onSelect(ex.key); }}
               data-example={ex.key}
             >
               {ex.label}
