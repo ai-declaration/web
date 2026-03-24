@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { buildAideclDeclaration } from "@/lib/aidecl-builder";
 import { toYaml, toJson } from "@/lib/yaml-utils";
 import type { AideclDeclaration } from "@/lib/aidecl-types";
@@ -89,39 +88,19 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
         </div>
       )}
 
-      <div className="flex gap-2">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size="sm" variant="outline" onClick={handleDownloadYaml}>
-              YAML
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Download as aidecl.yaml</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size="sm" variant="outline" onClick={handleDownloadJson}>
-              JSON
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Download as aidecl.json</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size="sm" variant="outline" onClick={handleCopy}>
-              {copied ? "Copied!" : "Copy"}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Copy YAML to clipboard</TooltipContent>
-        </Tooltip>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button size="sm" variant="outline" onClick={handleShareLink}>
-              {linkCopied ? "Link Copied!" : "Share"}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Copy shareable link</TooltipContent>
-        </Tooltip>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" onClick={handleDownloadYaml} title="Download as aidecl.yaml">
+          YAML
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleDownloadJson} title="Download as aidecl.json">
+          JSON
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleCopy} title="Copy YAML to clipboard">
+          {copied ? "Copied!" : "Copy"}
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleShareLink} title="Copy shareable link">
+          {linkCopied ? "Link Copied!" : "Share"}
+        </Button>
       </div>
 
       <pre className="max-h-[500px] overflow-auto rounded-md bg-muted p-3 text-xs leading-relaxed">

@@ -40,7 +40,7 @@ function reducer(state: AideclDeclaration, action: Action): AideclDeclaration {
         const idx = parseInt(parts[2]);
         const field = parts[3];
         if (next.ai_usage.tools && next.ai_usage.tools[idx]) {
-          (next.ai_usage.tools[idx] as Record<string, unknown>)[field] = value;
+          (next.ai_usage.tools[idx] as unknown as Record<string, unknown>)[field] = value;
         }
       } else if (path.startsWith("ai_usage.code_proportion.")) {
         const key = path.split(".").pop()!;

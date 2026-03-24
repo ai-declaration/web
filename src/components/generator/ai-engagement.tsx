@@ -103,7 +103,7 @@ export default function AiEngagement({ values, onChange, errors }: AiEngagementP
               <Label htmlFor="ai-level">AI Involvement Level</Label>
               <Select
                 value={values.level || ""}
-                onValueChange={(v) => onChange("ai_usage.level", v)}
+                onValueChange={(v) => { if (v) onChange("ai_usage.level", v); }}
               >
                 <SelectTrigger id="ai-level">
                   <SelectValue placeholder="Select level" />

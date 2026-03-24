@@ -48,7 +48,7 @@ export default function ComplianceSection({ compliance, governance, mode, onMode
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="compliance-mode">Compliance Mode</Label>
-          <Select value={mode} onValueChange={onModeChange}>
+          <Select value={mode} onValueChange={(v) => { if (v) onModeChange(v); }}>
             <SelectTrigger id="compliance-mode">
               <SelectValue />
             </SelectTrigger>
@@ -119,7 +119,7 @@ export default function ComplianceSection({ compliance, governance, mode, onMode
                 <Label htmlFor="risk-class">Risk Classification</Label>
                 <Select
                   value={compliance.risk_classification || ""}
-                  onValueChange={(v) => onChange("compliance.risk_classification", v)}
+                  onValueChange={(v) => { if (v) onChange("compliance.risk_classification", v); }}
                 >
                   <SelectTrigger id="risk-class">
                     <SelectValue placeholder="Select classification" />

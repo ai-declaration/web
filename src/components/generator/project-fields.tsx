@@ -67,7 +67,7 @@ export default function ProjectFields({ values, contentType, onChange, errors }:
         </div>
         <div className="space-y-2">
           <Label htmlFor="content-type">Content Type</Label>
-          <Select value={contentType} onValueChange={(v) => onChange("content_type", v)}>
+          <Select value={contentType} onValueChange={(v) => { if (v) onChange("content_type", v); }}>
             <SelectTrigger id="content-type">
               <SelectValue placeholder="Select type" />
             </SelectTrigger>

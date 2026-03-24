@@ -39,7 +39,7 @@ export default function ToolEntry({ tool, index, onChange, onRemove }: ToolEntry
             <Label htmlFor={`tool-type-${index}`} className="text-xs">Type</Label>
             <Select
               value={tool.type || ""}
-              onValueChange={(v) => onChange(`ai_usage.tools.${index}.type`, v)}
+              onValueChange={(v) => { if (v) onChange(`ai_usage.tools.${index}.type`, v); }}
             >
               <SelectTrigger id={`tool-type-${index}`}>
                 <SelectValue placeholder="Select type" />
@@ -57,7 +57,7 @@ export default function ToolEntry({ tool, index, onChange, onRemove }: ToolEntry
           <Label htmlFor={`tool-hosting-${index}`} className="text-xs">Hosting</Label>
           <Select
             value={tool.hosting || ""}
-            onValueChange={(v) => onChange(`ai_usage.tools.${index}.hosting`, v)}
+            onValueChange={(v) => { if (v) onChange(`ai_usage.tools.${index}.hosting`, v); }}
           >
             <SelectTrigger id={`tool-hosting-${index}`}>
               <SelectValue placeholder="Select hosting" />

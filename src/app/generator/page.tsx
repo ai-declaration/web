@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import ProjectFields from "@/components/generator/project-fields";
 import AiEngagement from "@/components/generator/ai-engagement";
 import ComplianceSection from "@/components/generator/compliance-section";
@@ -14,38 +13,36 @@ export default function GeneratorPage() {
   const [complianceMode, setComplianceMode] = useState("standard");
 
   return (
-    <TooltipProvider>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <h1 className="text-2xl font-bold">Declaration Generator</h1>
-          <ProjectFields
-            values={formData.project}
-            contentType={formData.content_type || "software"}
-            onChange={updateField}
-            errors={errors}
-          />
-          <AiEngagement
-            values={formData.ai_usage}
-            onChange={updateField}
-            errors={errors}
-          />
-          <ComplianceSection
-            compliance={formData.compliance || {}}
-            governance={formData.governance || {}}
-            mode={complianceMode}
-            onModeChange={setComplianceMode}
-            onChange={updateField}
-          />
-          <Attestation
-            values={formData.signature}
-            onChange={updateField}
-            errors={errors}
-          />
-        </div>
-        <aside className="lg:col-span-1">
-          <SidebarPreview formData={formData} issues={issues} isValid={isValid} />
-        </aside>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="space-y-6 lg:col-span-2">
+        <h1 className="text-2xl font-bold">Declaration Generator</h1>
+        <ProjectFields
+          values={formData.project}
+          contentType={formData.content_type || "software"}
+          onChange={updateField}
+          errors={errors}
+        />
+        <AiEngagement
+          values={formData.ai_usage}
+          onChange={updateField}
+          errors={errors}
+        />
+        <ComplianceSection
+          compliance={formData.compliance || {}}
+          governance={formData.governance || {}}
+          mode={complianceMode}
+          onModeChange={setComplianceMode}
+          onChange={updateField}
+        />
+        <Attestation
+          values={formData.signature}
+          onChange={updateField}
+          errors={errors}
+        />
       </div>
-    </TooltipProvider>
+      <aside className="lg:col-span-1">
+        <SidebarPreview formData={formData} issues={issues} isValid={isValid} />
+      </aside>
+    </div>
   );
 }
