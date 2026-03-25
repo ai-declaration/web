@@ -23,10 +23,8 @@ export default function Header() {
       </a>
       <div className="mx-auto flex max-w-[1400px] items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
         <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-gradient-to-br from-blue-500 to-blue-700 text-xs font-bold text-white">
-            AI
-          </div>
-          <span className="hidden text-lg font-semibold sm:inline">AI Declaration</span>
+          <img src="/logo.svg" alt="AI Declaration Format" className="h-8 w-8" />
+          <span className="hidden text-lg font-semibold sm:inline">AI Declaration Format</span>
         </Link>
         <div className="flex items-center gap-3">
         <nav role="tablist" aria-label="Main navigation" className="flex gap-1 overflow-x-auto">

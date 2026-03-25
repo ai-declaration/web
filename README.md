@@ -1,6 +1,6 @@
 # aidecl-web
 
-Web-based tool for creating, validating, and browsing [AI Declaration](https://github.com/ai-declaration) files. All processing happens client-side -- no data leaves your browser.
+Web-based tool for creating, validating, and browsing [AI Declaration Format](https://github.com/ai-declaration) files. All processing happens client-side -- no data leaves your browser.
 
 ## Features
 

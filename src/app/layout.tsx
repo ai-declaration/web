@@ -5,17 +5,17 @@ import ErrorBoundary from "@/components/error-boundary";
 import ThemeProvider from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "AI Declaration | AI Disclosure Dashboard",
+  title: "AI Declaration Format | AI Disclosure Dashboard",
   description: "Create, validate, and explore AI Declaration files for transparent AI usage disclosure.",
   openGraph: {
-    title: "AI Declaration",
+    title: "AI Declaration Format",
     description: "Web tool for creating and validating AI Declaration files.",
     type: "website",
     url: "https://ai-declaration.github.io/web/",
   },
   twitter: {
     card: "summary",
-    title: "AI Declaration",
+    title: "AI Declaration Format",
     description: "Web tool for creating and validating AI Declaration files.",
   },
 };
@@ -38,7 +38,7 @@ export default function RootLayout({
             </div>
           </main>
           <footer className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-            <p>AI Declaration v1.0.0 -- All processing is client-side only. No data leaves your browser.</p>
+            <p>AI Declaration Format v1.0.0 -- All processing is client-side only. No data leaves your browser.</p>
             <p className="mt-1">
               <a href="https://github.com/ai-declaration" className="hover:text-foreground">Contribute</a>
               {" | "}
