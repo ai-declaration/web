@@ -44,6 +44,7 @@ export default function RootLayout({
               {" | "}
               <a href="https://github.com/ai-declaration/web/issues" className="hover:text-foreground">Report Issues</a>
             </p>
+            <p className="mt-1">Maintained by ReSoft Labs</p>
           </footer>
         </ThemeProvider>
       </body>
