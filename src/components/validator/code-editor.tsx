@@ -61,6 +61,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           />
           <span>Drop a file here or</span>
           <button
+            type="button"
             onClick={() => fileInputRef.current?.click()}
             className="rounded bg-muted px-2 py-1 font-medium hover:bg-border"
           >
