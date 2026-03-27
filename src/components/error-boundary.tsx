@@ -30,6 +30,7 @@ export default class ErrorBoundary extends React.Component<
           <p className="text-lg font-semibold text-foreground">Something went wrong</p>
           <p className="text-sm text-muted-foreground">An unexpected error occurred while rendering this page.</p>
           <button
+            type="button"
             onClick={() => this.setState({ hasError: false })}
             className="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
           >
