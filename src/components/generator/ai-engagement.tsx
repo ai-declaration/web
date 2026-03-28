@@ -151,6 +151,8 @@ export default function AiEngagement({ values, onChange, errors }: AiEngagementP
                 ))}
               </div>
               <button
+                type="button"
+                aria-label="Add custom tool"
                 onClick={() => onChange("ai_usage.addTool", { name: "", type: "assistant", hosting: "cloud" })}
                 className="text-sm text-accent hover:underline"
               >
