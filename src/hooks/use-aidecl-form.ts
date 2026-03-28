@@ -15,7 +15,7 @@ const initialState: AideclDeclaration = {
   content_type: "software",
   project: { name: "" },
   ai_usage: { used: false },
-  signature: { declared_by: "", declaration_date: new Date().toISOString().split("T")[0] },
+  signature: { declared_by: "", declaration_date: "" },
 };
 
 function reducer(state: AideclDeclaration, action: Action): AideclDeclaration {
@@ -86,6 +86,12 @@ export function useAideclForm() {
     } catch { /* ignore */ }
     return initialState;
   });
+
+  useEffect(() => {
+    if (!formData.signature.declaration_date) {
+      dispatch({ type: "SET_FIELD", path: "signature.declaration_date", value: new Date().toISOString().split("T")[0] });
+    }
+  }, [formData.signature.declaration_date]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
