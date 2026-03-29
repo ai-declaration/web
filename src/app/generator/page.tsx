@@ -1,16 +1,36 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import ProjectFields from "@/components/generator/project-fields";
 import AiEngagement from "@/components/generator/ai-engagement";
 import ComplianceSection from "@/components/generator/compliance-section";
 import Attestation from "@/components/generator/attestation";
 import SidebarPreview from "@/components/generator/sidebar-preview";
 import { useAideclForm } from "@/hooks/use-aidecl-form";
+import { EXAMPLES } from "@/lib/examples";
+import { parseYamlOrJson } from "@/lib/yaml-utils";
+import type { AideclDeclaration } from "@/lib/aidecl-types";
 
-export default function GeneratorPage() {
-  const { formData, updateField, errors, issues, isValid } = useAideclForm();
+function GeneratorContent() {
+  const { formData, updateField, loadPreset, errors, issues, isValid } = useAideclForm();
   const [complianceMode, setComplianceMode] = useState("standard");
+  const searchParams = useSearchParams();
+  const appliedPreset = useRef<string | null>(null);
+
+  useEffect(() => {
+    const preset = searchParams.get("preset");
+    if (preset && preset !== appliedPreset.current) {
+      const example = EXAMPLES.find((e) => e.key === preset);
+      if (example) {
+        const { data } = parseYamlOrJson(example.yaml);
+        if (data) {
+          loadPreset(data as AideclDeclaration);
+          appliedPreset.current = preset;
+        }
+      }
+    }
+  }, [searchParams, loadPreset]);
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -44,5 +64,13 @@ export default function GeneratorPage() {
         <SidebarPreview formData={formData} issues={issues} isValid={isValid} />
       </aside>
     </div>
+  );
+}
+
+export default function GeneratorPage() {
+  return (
+    <Suspense>
+      <GeneratorContent />
+    </Suspense>
   );
 }
