@@ -18,6 +18,7 @@ export default function ToolEntry({ tool, index, onChange, onRemove }: ToolEntry
   return (
     <Card className="relative">
       <button
+        type="button"
         onClick={onRemove}
         className="absolute top-2 right-2 text-muted-foreground hover:text-error text-sm"
         aria-label={`Remove ${tool.name || "tool"}`}
