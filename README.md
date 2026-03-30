@@ -1,12 +1,12 @@
 # aidecl-web
 
-Web-based tool for creating, validating, and browsing [AI Declaration Format](https://github.com/ai-declaration) files. All processing happens client-side -- no data leaves your browser.
+Web-based tool for creating, validating, and browsing [AI Declaration Format](https://github.com/ai-declaration) files. All processing happens client-side; no data leaves your browser.
 
 ## Features
 
-- **Generator** -- Build aidecl.yaml declarations through a guided form with live YAML preview, download, copy, and shareable links
-- **Validator** -- Paste or upload YAML/JSON files to validate against the AI Declaration schema (Draft 2020-12)
-- **Library** -- Browse 8 reference examples covering minimal, web app, research, high-risk, enterprise, and more
+- **Generator**: build aidecl.yaml declarations through a guided form with live YAML preview, download, copy, and shareable links
+- **Validator**: paste or upload YAML/JSON files to validate against the AI Declaration schema (Draft 2020-12)
+- **Library**: browse 8 reference examples covering minimal, web app, research, high-risk, enterprise, and more
 
 ## Tech Stack
 
@@ -34,7 +34,7 @@ Open http://localhost:3000 in your browser.
 npm run build
 ```
 
-Produces a static export in `out/`. No server required -- deploy to any static hosting.
+Produces a static export in `out/`. No server required. Deploy to any static hosting.
 
 ## Deploy
 
@@ -47,8 +47,8 @@ Works with any static hosting:
 
 ## Related Projects
 
-- [schema](https://github.com/ai-declaration/schema) -- The specification
-- [cli](https://github.com/ai-declaration/cli) -- CLI tool
+- [schema](https://github.com/ai-declaration/schema): the specification
+- [cli](https://github.com/ai-declaration/cli): CLI tool
 
 ## Roadmap
 

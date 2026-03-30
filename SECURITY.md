@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a client-side web application. All data processing happens in the browser -- no data is sent to any server.
+This is a client-side web application. All data processing happens in the browser. No data is sent to any server.
 
 ## Reporting Vulnerabilities
 

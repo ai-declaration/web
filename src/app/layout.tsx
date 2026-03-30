@@ -38,7 +38,7 @@ export default function RootLayout({
             </div>
           </main>
           <footer className="border-t border-border py-4 text-center text-xs text-muted-foreground">
-            <p>AI Declaration Format v1.0.0 -- All processing is client-side only. No data leaves your browser.</p>
+            <p>AI Declaration Format v1.0.0 | All processing is client-side only. No data leaves your browser.</p>
             <p className="mt-1">
               <a href="https://github.com/ai-declaration" className="hover:text-foreground">Contribute</a>
               {" | "}
