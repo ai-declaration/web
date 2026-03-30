@@ -22,6 +22,7 @@ export default function ThemeToggle() {
 
   return (
     <button
+      type="button"
       onClick={cycle}
       className="flex h-8 w-8 items-center justify-center rounded-md text-sm hover:bg-muted"
       aria-label={`Current theme: ${label}. Click to change.`}
