@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: "AI Declaration Format",
     description: "Web tool for creating and validating AI Declaration files.",
     type: "website",
-    url: "https://ai-declaration.github.io/web/",
+    url: "https://ai-declaration.org",
   },
   twitter: {
     card: "summary",
