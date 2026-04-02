@@ -17,14 +17,27 @@ function stripEmpty(obj: Record<string, unknown>): Record<string, unknown> {
 }
 
 export function buildAideclDeclaration(formData: AideclDeclaration): Record<string, unknown> {
+  // Build project with content_type inside (per schema)
+  const project = stripEmpty({
+    ...formData.project as unknown as Record<string, unknown>,
+    content_type: formData.content_type,
+  });
+
+  // Map form signature -> schema declaration
+  const declaration = stripEmpty({
+    declared_by: formData.signature?.declared_by,
+    date: formData.signature?.declaration_date,
+    reviewed_by: formData.signature?.reviewed_by,
+    review_date: formData.signature?.review_date,
+  });
+
   const result = stripEmpty({
     schema_version: formData.schema_version,
-    content_type: formData.content_type,
-    project: stripEmpty(formData.project as unknown as Record<string, unknown>),
+    project,
     ai_usage: stripEmpty(formData.ai_usage as unknown as Record<string, unknown>),
     ...(formData.compliance ? { compliance: stripEmpty(formData.compliance as unknown as Record<string, unknown>) } : {}),
     ...(formData.governance ? { governance: stripEmpty(formData.governance as unknown as Record<string, unknown>) } : {}),
-    signature: stripEmpty(formData.signature as unknown as Record<string, unknown>),
+    declaration,
   });
 
   return result;

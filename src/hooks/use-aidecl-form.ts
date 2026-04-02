@@ -18,6 +18,38 @@ const initialState: AideclDeclaration = {
   signature: { declared_by: "", declaration_date: "" },
 };
 
+/** Normalize parsed schema data into the internal form model. */
+function normalizeToFormModel(input: unknown): AideclDeclaration {
+  const raw = input as Record<string, unknown>;
+  const base = structuredClone(raw) as unknown as AideclDeclaration;
+
+  // Map schema `declaration` -> form `signature`
+  if (raw.declaration && !raw.signature) {
+    const decl = raw.declaration as Record<string, unknown>;
+    base.signature = {
+      declared_by: (decl.declared_by as string) || "",
+      declaration_date: (decl.date as string) || "",
+      reviewed_by: decl.reviewed_by as string | undefined,
+      review_date: decl.review_date as string | undefined,
+    };
+  }
+
+  // Map schema `project.content_type` -> form `content_type`
+  if (!base.content_type && base.project) {
+    const proj = base.project as unknown as Record<string, unknown>;
+    if (proj.content_type) {
+      base.content_type = proj.content_type as string;
+    }
+  }
+
+  // Ensure signature always exists
+  if (!base.signature) {
+    base.signature = { declared_by: "", declaration_date: "" };
+  }
+
+  return base;
+}
+
 function reducer(state: AideclDeclaration, action: Action): AideclDeclaration {
   const next = structuredClone(state);
 
@@ -80,18 +112,17 @@ export function useAideclForm() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const parsed = JSON.parse(saved) as AideclDeclaration;
-        return parsed;
+        return normalizeToFormModel(JSON.parse(saved));
       }
     } catch { /* ignore */ }
     return initialState;
   });
 
   useEffect(() => {
-    if (!formData.signature.declaration_date) {
+    if (!formData.signature?.declaration_date) {
       dispatch({ type: "SET_FIELD", path: "signature.declaration_date", value: new Date().toISOString().split("T")[0] });
     }
-  }, [formData.signature.declaration_date]);
+  }, [formData.signature?.declaration_date]);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -118,13 +149,13 @@ export function useAideclForm() {
   }, []);
 
   const loadPreset = useCallback((data: AideclDeclaration) => {
-    dispatch({ type: "LOAD_PRESET", data });
+    dispatch({ type: "LOAD_PRESET", data: normalizeToFormModel(data) });
   }, []);
 
   const errors: FormErrors = useMemo(() => {
     const e: FormErrors = {};
     if (!formData.project.name.trim()) e["project.name"] = "Project name is required";
-    if (!formData.signature.declared_by.trim()) e["signature.declared_by"] = "Declared by is required";
+    if (!formData.signature?.declared_by?.trim()) e["signature.declared_by"] = "Declared by is required";
     if (formData.ai_usage.used && !formData.ai_usage.summary?.trim()) {
       e["ai_usage.summary"] = "Usage summary is required when AI is used";
     }
@@ -134,7 +165,7 @@ export function useAideclForm() {
   const issues: string[] = useMemo(() => {
     const list: string[] = [];
     if (!formData.project.name.trim()) list.push("Project name is missing");
-    if (!formData.signature.declared_by.trim()) list.push("Declared by is missing");
+    if (!formData.signature?.declared_by?.trim()) list.push("Declared by is missing");
     if (formData.ai_usage.used && !formData.ai_usage.summary?.trim()) list.push("AI usage summary is missing");
     if (formData.ai_usage.used && (!formData.ai_usage.tools || formData.ai_usage.tools.length === 0)) {
       list.push("No AI tools specified");

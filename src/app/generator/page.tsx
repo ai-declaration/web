@@ -55,7 +55,7 @@ function GeneratorContent() {
           onChange={updateField}
         />
         <Attestation
-          values={formData.signature}
+          values={formData.signature ?? { declared_by: "", declaration_date: "" }}
           onChange={updateField}
           errors={errors}
         />
