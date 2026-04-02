@@ -1,5 +1,5 @@
 import { EXAMPLES } from "@/lib/examples";
-import ExampleRedirect from "@/components/library/example-redirect";
+import ExampleRedirect from "@/components/examples/example-redirect";
 
 export function generateStaticParams() {
   return EXAMPLES.map((ex) => ({ slug: ex.key }));

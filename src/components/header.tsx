@@ -7,7 +7,7 @@ import ThemeToggle from "./theme-toggle";
 const navItems = [
   { href: "/generator", label: "Generator" },
   { href: "/validator", label: "Validator" },
-  { href: "/library", label: "Examples" },
+  { href: "/examples", label: "Examples" },
 ];
 
 export default function Header() {
