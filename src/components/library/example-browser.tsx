@@ -16,7 +16,7 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Reference Library</CardTitle>
+        <CardTitle>Reference Examples</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex flex-wrap gap-2" role="listbox" aria-label="Example templates">

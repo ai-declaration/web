@@ -11,7 +11,7 @@ export default function LibraryPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold" id="library-heading">Example Library</h1>
+      <h1 className="text-2xl font-bold" id="library-heading">Examples</h1>
       <ExampleBrowser examples={EXAMPLES} selected={selected} onSelect={setSelected} />
       {currentExample && <ExampleCard example={currentExample} />}
     </div>
