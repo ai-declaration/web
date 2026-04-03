@@ -1156,5 +1156,111 @@ declaration:
   review_date: "2026-02-14"
 `,
   },
+  {
+    key: "government",
+    label: "Government",
+    description: "Public sector project with strict transparency requirements",
+    category: "Compliance & Governance",
+    yaml: `schema_version: "1.0.0"
+project:
+  name: citizen-services-portal
+  content_type: software
+  repository: https://gitlab.com/gov-digital/citizen-services
+  version: "2.0.0"
+  license: EUPL-1.2
+ai_usage:
+  used: true
+  summary: AI tools assisted with form validation logic and accessibility compliance checks. All citizen-facing features and data handling were developed and audited by government-certified engineers.
+  level: minimal
+  tools:
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose: 
+        - Form validation boilerplate and accessibility checks
+  scope:
+    code_generation: true
+    code_review: true
+  code_proportion:
+    ai_generated_percent: 8
+    ai_assisted_percent: 10
+    human_only_percent: 82
+    method: audit_estimated
+compliance_eu_ai_act:
+  classification: limited_risk
+  ai_generated_content_disclosure: true
+governance:
+  responsible_officer: Chief Digital Officer
+  organizational_policy_url: https://gov-digital.example.gov/ai-policy
+  ethics_review_status: approved
+declaration:
+  declared_by: Project Manager
+  date: "2026-01-05"
+  reviewed_by: Internal Audit
+  review_date: "2026-01-04"
+`,
+  },
+  {
+    key: "comprehensive",
+    label: "Comprehensive",
+    description: "Full-featured declaration with all sections",
+    category: "Compliance & Governance",
+    yaml: `schema_version: "1.0.0"
+project:
+  name: smart-scheduler
+  content_type: software
+  repository: https://github.com/acme/smart-scheduler
+  version: "1.0.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: Multiple AI tools used across the full development lifecycle for code generation, testing, documentation, and code review.
+  level: significant
+  tools:
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose: 
+        - Code completion and generation
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose: 
+        - Architecture review and documentation
+    - name: Ollama
+      type: model_runner
+      version: "0.5.x"
+      hosting: local_offline
+      purpose: 
+        - Local code review
+  scope:
+    code_generation: true
+    code_completion: true
+    code_review: true
+    documentation: true
+    testing: true
+    debugging: false
+    infrastructure: true
+    refactoring: true
+  code_proportion:
+    ai_generated_percent: 30
+    ai_assisted_percent: 40
+    human_only_percent: 30
+    method: self_reported
+compliance:
+  frameworks:
+    - internal_policy
+governance:
+  responsible_officer: Tech Lead
+  organizational_policy_url: https://acme.com/ai-policy
+  ethics_review_status: approved
+declaration:
+  declared_by: Jamie Rivera
+  date: "2026-03-10"
+  reviewed_by: Tech Lead
+  review_date: "2026-03-09"
+`,
+  },
 ];
-
