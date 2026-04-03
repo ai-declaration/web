@@ -1037,5 +1037,124 @@ declaration:
   date: "2026-02-14"
 `,
   },
+  // --- Compliance & Governance ---
+  {
+    key: "security",
+    label: "Security Audit",
+    description: "Vulnerability scanner with AI-generated analysis rules",
+    category: "Compliance & Governance",
+    yaml: `schema_version: "1.0.0"
+project:
+  name: vuln-scanner
+  content_type: software
+  repository: https://github.com/secops/vuln-scanner
+  version: "2.1.0"
+  license: GPL-3.0
+ai_usage:
+  used: true
+  summary: AI was used to generate static analysis rules and help draft penetration test report templates. Vulnerability detection logic and risk scoring were developed by the security team.
+  level: minimal
+  tools:
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose: 
+        - Static analysis rule generation and report template drafting
+  scope:
+    code_generation: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 10
+    ai_assisted_percent: 15
+    human_only_percent: 75
+    method: self_reported
+declaration:
+  declared_by: Security Team Lead
+  date: "2026-01-30"
+`,
+  },
+  {
+    key: "highrisk",
+    label: "High-Risk AI",
+    description: "Medical scan analysis with EU AI Act classification",
+    category: "Compliance & Governance",
+    yaml: `schema_version: "1.0.0"
+project:
+  name: radiology-assist
+  content_type: software
+  version: "1.2.0"
+  license: proprietary
+ai_usage:
+  used: true
+  summary: AI model used for preliminary scan analysis. All outputs reviewed by qualified radiologist.
+  level: extensive
+  tools:
+    - name: RadiologyNet
+      type: standalone
+      version: "2.0"
+      hosting: local_offline
+      purpose: 
+        - Preliminary scan classification
+compliance_eu_ai_act:
+  classification: high_risk
+  technical_documentation_url: https://example.com/technical-file
+  declaration_of_conformity_url: https://example.com/technical-file
+  human_oversight: All outputs reviewed by qualified radiologist
+governance:
+  responsible_officer: Dr. Hans Mueller
+  ethics_review_status: approved
+declaration:
+  declared_by: Dr. Hans Mueller
+  date: "2026-01-10"
+  reviewed_by: Ethics Board
+  review_date: "2026-01-08"
+`,
+  },
+  {
+    key: "enterprise",
+    label: "Enterprise",
+    description: "Enterprise-level with governance and DPIA",
+    category: "Compliance & Governance",
+    yaml: `schema_version: "1.0.0"
+project:
+  name: customer-insights-platform
+  content_type: software
+  repository: https://gitlab.com/bigcorp/insights
+  version: "5.2.0"
+  license: proprietary
+ai_usage:
+  used: true
+  summary: AI used for data pipeline code generation and automated testing. All AI-generated code undergoes mandatory human review before merge.
+  level: moderate
+  tools:
+    - name: Cursor
+      type: assistant
+      hosting: cloud_vendor
+      purpose: 
+        - Code generation for data pipelines
+  scope:
+    code_generation: true
+    testing: true
+    infrastructure: true
+  code_proportion:
+    ai_generated_percent: 20
+    ai_assisted_percent: 30
+    human_only_percent: 50
+    method: tool_measured
+compliance_eu_ai_act:
+  classification: general_purpose_ai
+  intended_purpose: Data processing pipeline classified under GPAI provisions
+  gpai_model_provider: Cursor AI
+governance:
+  responsible_officer: VP Engineering
+  organizational_policy_url: https://bigcorp.com/policies/ai-usage
+  ethics_review_status: approved
+declaration:
+  declared_by: Michael Torres
+  date: "2026-02-15"
+  reviewed_by: CISO Office
+  review_date: "2026-02-14"
+`,
+  },
 ];
 
