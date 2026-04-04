@@ -17,7 +17,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-sm">
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-accent focus:text-white focus:rounded-md"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
       >
         Skip to main content
       </a>
@@ -40,7 +40,7 @@ export default function Header() {
                 tabIndex={0}
                 className={`whitespace-nowrap rounded-md px-2 py-1 text-sm font-medium transition-colors sm:px-3 sm:py-1.5 ${
                   isActive
-                    ? "bg-accent text-white"
+                    ? "bg-primary text-primary-foreground"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
