@@ -143,7 +143,7 @@ export default function AiEngagement({ values, onChange, errors }: AiEngagementP
                   <Badge
                     key={tool.name}
                     variant="outline"
-                    className="cursor-pointer hover:bg-accent hover:text-white"
+                    className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
                     onClick={() => onChange("ai_usage.addTool", tool)}
                   >
                     + {tool.name}
@@ -154,7 +154,7 @@ export default function AiEngagement({ values, onChange, errors }: AiEngagementP
                 type="button"
                 aria-label="Add custom tool"
                 onClick={() => onChange("ai_usage.addTool", { name: "", type: "assistant", hosting: "cloud" })}
-                className="text-sm text-accent hover:underline"
+                className="text-sm text-muted-foreground hover:text-foreground hover:underline"
               >
                 + Add Custom Tool
               </button>

@@ -53,7 +53,7 @@ export default function Attestation({ values, onChange, errors }: AttestationPro
           <button
             type="button"
             onClick={() => setShowReviewer(true)}
-            className="text-sm text-accent hover:underline"
+            className="text-sm text-muted-foreground hover:text-foreground hover:underline"
           >
             + Add reviewer
           </button>
