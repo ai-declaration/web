@@ -1,11 +1,56 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buildAideclDeclaration } from "@/lib/aidecl-builder";
 import { toYaml, toJson } from "@/lib/yaml-utils";
+import { YamlCode, findYamlKeyLines } from "@/lib/yaml-highlight";
 import type { AideclDeclaration } from "@/lib/aidecl-types";
+
+function DownloadIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </svg>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function ShareIcon() {
+  return (
+    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
+  );
+}
+
+function ChevronDownIcon() {
+  return (
+    <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
 
 interface SidebarPreviewProps {
   formData: AideclDeclaration;
@@ -13,85 +58,47 @@ interface SidebarPreviewProps {
   isValid: boolean;
 }
 
-function highlightYaml(yaml: string): React.ReactNode[] {
-  return yaml.split("\n").map((line, i) => {
-    // empty line
-    if (line.trim() === "") return <span key={i}>{"\n"}</span>;
-
-    // comment
-    if (line.trimStart().startsWith("#")) {
-      return <span key={i} className="text-gray-400 dark:text-gray-500">{line}{"\n"}</span>;
-    }
-
-    // key: value  or  - key: value
-    const kv = line.match(/^(\s*(?:- )?)([\w_][\w_.-]*)(:)([ ].*|$)/);
-    if (kv) {
-      const [, prefix, key, colon, rest] = kv;
-      return (
-        <span key={i}>
-          <span className="text-muted-foreground">{prefix}</span>
-          <span className="text-sky-600 dark:text-sky-400">{key}</span>
-          <span className="text-muted-foreground">{colon}</span>
-          {colorValue(rest)}
-          {"\n"}
-        </span>
-      );
-    }
-
-    // bare list item: - value
-    const li = line.match(/^(\s*- )(.*)/);
-    if (li) {
-      const [, dash, val] = li;
-      return (
-        <span key={i}>
-          <span className="text-muted-foreground">{dash}</span>
-          {colorValue(" " + val)}
-          {"\n"}
-        </span>
-      );
-    }
-
-    // multiline string continuation (indented text after >- or |)
-    return <span key={i} className="text-emerald-600 dark:text-emerald-400">{line}{"\n"}</span>;
-  });
-}
-
-function colorValue(raw: string): React.ReactNode {
-  const trimmed = raw.trimStart();
-  const leadingSpace = raw.slice(0, raw.length - trimmed.length);
-
-  if (trimmed === "" || trimmed === ">-" || trimmed === ">" || trimmed === "|") {
-    return <span className="text-muted-foreground">{raw}</span>;
-  }
-  // quoted string
-  if (/^["']/.test(trimmed)) {
-    return <><span>{leadingSpace}</span><span className="text-emerald-600 dark:text-emerald-400">{trimmed}</span></>;
-  }
-  // boolean
-  if (/^(true|false)$/i.test(trimmed)) {
-    return <><span>{leadingSpace}</span><span className="text-amber-600 dark:text-amber-400">{trimmed}</span></>;
-  }
-  // number
-  if (/^\d+(\.\d+)?$/.test(trimmed)) {
-    return <><span>{leadingSpace}</span><span className="text-amber-600 dark:text-amber-400">{trimmed}</span></>;
-  }
-  // url
-  if (/^https?:\/\//.test(trimmed)) {
-    return <><span>{leadingSpace}</span><span className="text-violet-600 dark:text-violet-400">{trimmed}</span></>;
-  }
-
-  return <span>{raw}</span>;
-}
-
 export default function SidebarPreview({ formData, issues, isValid }: SidebarPreviewProps) {
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
+  const [dlOpen, setDlOpen] = useState(false);
+  const dlRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!dlOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (dlRef.current && !dlRef.current.contains(e.target as Node)) setDlOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [dlOpen]);
 
   const declaration = useMemo(() => buildAideclDeclaration(formData), [formData]);
   const yamlPreview = useMemo(() => toYaml(declaration), [declaration]);
-  const highlighted = useMemo(() => highlightYaml(yamlPreview), [yamlPreview]);
 
-  const status = isValid ? "Ready" : issues.length > 2 ? "Incomplete" : "Draft";
+  // Map issue strings to YAML keys so we can highlight the relevant lines
+  const ISSUE_KEY_MAP: Record<string, string> = {
+    "Project name is missing": "name",
+    "Declared by is missing": "declared_by",
+    "AI usage summary is missing": "summary",
+    "No AI tools specified": "tools",
+  };
+
+  const issueLineMap = useMemo(() => {
+    if (issues.length === 0) return new Map<string, number>();
+    const keysToFind = issues.map((iss) => ISSUE_KEY_MAP[iss]).filter(Boolean);
+    if (keysToFind.length === 0) return new Map<string, number>();
+    return findYamlKeyLines(yamlPreview, keysToFind);
+  }, [yamlPreview, issues]);
+
+  const errorLines = useMemo(() => new Set(issueLineMap.values()), [issueLineMap]);
+
+  function getIssueLine(issue: string): number | undefined {
+    const key = ISSUE_KEY_MAP[issue];
+    return key ? issueLineMap.get(key) : undefined;
+  }
+
+  const status = isValid ? "Valid" : issues.length > 2 ? "Incomplete" : "Draft";
   const statusColor = isValid ? "bg-success" : issues.length > 2 ? "bg-error" : "bg-warning";
 
   const handleDownloadYaml = () => {
@@ -147,35 +154,84 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
       </div>
 
       {issues.length > 0 && (
-        <div aria-live="polite" aria-atomic="false" className="mt-3 shrink-0">
-          <ul className="space-y-1 text-sm text-muted-foreground">
-            {issues.map((issue, i) => (
-              <li key={i} className="flex items-start gap-1.5">
-                <span className="text-warning">!</span>
-                {issue}
-              </li>
-            ))}
+        <div
+          aria-live="polite"
+          aria-atomic="false"
+          className={`mt-3 shrink-0 rounded-md border px-3 py-2.5 ${
+            issues.length > 2
+              ? "border-error/30 bg-error/5"
+              : "border-warning/30 bg-warning/5"
+          }`}
+        >
+          <div className="flex items-center gap-1.5 mb-1.5">
+            <svg className={`h-4 w-4 shrink-0 ${issues.length > 2 ? "text-error" : "text-warning"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <span className={`text-xs font-semibold uppercase tracking-wide ${
+              issues.length > 2 ? "text-error" : "text-warning"
+            }`}>
+              {issues.length > 2 ? "Missing required fields" : "Incomplete"}
+            </span>
+          </div>
+          <ul className="space-y-1 text-sm">
+            {issues.map((issue, i) => {
+              const line = getIssueLine(issue);
+              return (
+                <li key={i} className="flex items-start gap-2 text-foreground/80">
+                  <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${
+                    issues.length > 2 ? "bg-error/60" : "bg-warning/60"
+                  }`} />
+                  <span className="flex-1">{issue}</span>
+                  {line != null && (
+                    <span className="shrink-0 text-[10px] font-mono text-muted-foreground mt-0.5">
+                      L{line}
+                    </span>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}
 
-      <div className="flex flex-wrap gap-2 mt-3 shrink-0">
-        <Button size="sm" variant="outline" onClick={handleDownloadYaml} title="Download as aidecl.yaml">
-          YAML
-        </Button>
-        <Button size="sm" variant="outline" onClick={handleDownloadJson} title="Download as aidecl.json">
-          JSON
-        </Button>
+      {isValid && <div className="flex flex-wrap gap-2 mt-3 shrink-0 justify-end">
+        <div className="relative" ref={dlRef}>
+          <Button size="sm" variant="outline" onClick={() => setDlOpen(o => !o)} title="Download declaration">
+            <DownloadIcon />
+            <span className="ml-1.5">Download</span>
+            <span className="ml-1"><ChevronDownIcon /></span>
+          </Button>
+          {dlOpen && (
+            <div className="absolute right-0 top-full mt-1 z-10 rounded-md border border-border bg-popover shadow-md py-1 min-w-[120px]">
+              <button
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-popover-foreground hover:bg-muted transition-colors"
+                onClick={() => { handleDownloadYaml(); setDlOpen(false); }}
+              >
+                YAML
+              </button>
+              <button
+                className="flex w-full items-center gap-2 px-3 py-1.5 text-sm text-popover-foreground hover:bg-muted transition-colors"
+                onClick={() => { handleDownloadJson(); setDlOpen(false); }}
+              >
+                JSON
+              </button>
+            </div>
+          )}
+        </div>
         <Button size="sm" variant="outline" onClick={handleCopy} title="Copy YAML to clipboard">
-          {copied ? "Copied!" : "Copy"}
+          {copied ? <CheckIcon /> : <CopyIcon />}
+          <span className="ml-1.5">{copied ? "Copied" : "Copy"}</span>
         </Button>
         <Button size="sm" variant="outline" onClick={handleShareLink} title="Copy shareable link">
-          {linkCopied ? "Link Copied!" : "Share"}
+          {linkCopied ? <CheckIcon /> : <ShareIcon />}
+          <span className="ml-1.5">{linkCopied ? "Copied" : "Share"}</span>
         </Button>
-      </div>
+      </div>}
 
-      <pre className="mt-3 flex-1 min-h-0 overflow-auto rounded-md bg-muted p-4 text-[13px] leading-relaxed">
-        <code>{highlighted}</code>
+      <pre className="mt-3 flex-1 min-h-0 overflow-auto rounded-md bg-muted p-4 text-[13px]">
+        <code><YamlCode yaml={yamlPreview} errorLines={errorLines} /></code>
       </pre>
     </div>
   );
