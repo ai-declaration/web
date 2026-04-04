@@ -1,18 +1,52 @@
+export type AiLevel = "none" | "minimal" | "moderate" | "significant" | "extensive";
+
+export const LEVEL_ORDER: AiLevel[] = ["none", "minimal", "moderate", "significant", "extensive"];
+export const LEVEL_LABELS: Record<AiLevel, string> = {
+  none: "No AI Used",
+  minimal: "Minimal AI",
+  moderate: "Moderate AI",
+  significant: "Significant AI",
+  extensive: "Extensive AI",
+};
+
 export interface ExampleMeta {
   key: string;
   label: string;
   description: string;
   category: string;
+  level: AiLevel;
+  tags: string[];
   yaml: string;
 }
 
+export function getUniqueTags(examples: ExampleMeta[]): string[] {
+  const tagSet = new Set<string>();
+  for (const ex of examples) {
+    for (const t of ex.tags) tagSet.add(t);
+  }
+  return Array.from(tagSet).sort();
+}
+
+export function groupByLevel(examples: ExampleMeta[]): { level: AiLevel; label: string; items: ExampleMeta[] }[] {
+  const groups: { level: AiLevel; label: string; items: ExampleMeta[] }[] = [];
+  for (const lvl of LEVEL_ORDER) {
+    const items = examples.filter((e) => e.level === lvl);
+    if (items.length > 0) {
+      groups.push({ level: lvl, label: LEVEL_LABELS[lvl], items });
+    }
+  }
+  return groups;
+}
+
 export const EXAMPLES: ExampleMeta[] = [
-  // --- No / Minimal AI ---
+  // ──── Software ────
   {
     key: "no-ai",
     label: "No AI",
     description: "Explicit declaration that no AI was used",
-    category: "No / Minimal AI",
+    category: "Software",
+    level: "none",
+    tags: ["api", "auth", "no-ai"],
     yaml: `schema_version: "1.0.0"
 project:
   name: auth-service
@@ -31,7 +65,9 @@ declaration:
     key: "minimal",
     label: "Minimal CLI",
     description: "A simple CLI tool with no AI usage",
-    category: "No / Minimal AI",
+    category: "Software",
+    level: "none",
+    tags: ["cli", "no-ai"],
     yaml: `schema_version: "1.0.0"
 project:
   name: log-rotator
@@ -47,205 +83,52 @@ declaration:
 `,
   },
   {
-    key: "human-first",
-    label: "Human-First",
-    description: "Core built by humans, AI used late for docs and formatting",
-    category: "No / Minimal AI",
+    key: "embedded",
+    label: "Embedded / IoT",
+    description: "IoT sensor firmware with AI-generated driver boilerplate",
+    category: "Software",
+    level: "minimal",
+    tags: ["iot", "firmware", "copilot"],
     yaml: `schema_version: "1.0.0"
 project:
-  name: fleet-manager
+  name: enviro-sensor
   content_type: software
-  repository: https://github.com/transit-co/fleet-manager
-  version: "3.2.0"
-  license: MIT
+  repository: https://github.com/iotsys/enviro-sensor
+  version: "1.1.0"
+  license: GPL-3.0
 ai_usage:
   used: true
-  summary: >
-    The core functionality of this project was designed and implemented
-    by the development team without the use of AI code generation tools.
-    In the later stages, AI-assisted tools were selectively used for
-    documentation drafting, boilerplate generation, and code formatting.
-    AI tools were not used to generate core logic, architecture,
-    algorithms, or primary feature implementations. All AI output was
-    reviewed, edited, and validated by developers before inclusion.
-    The development team is fully responsible for all code and
-    documentation in this repository.
+  summary: AI was used to generate peripheral driver boilerplate and communication protocol stubs. Sensor calibration logic and safety-critical interrupt handlers were written and reviewed by embedded engineers.
   level: minimal
   tools:
     - name: GitHub Copilot
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
-        - Documentation drafting and boilerplate generation
-  scope:
-    code_generation: false
-    code_completion: false
-    code_review: false
-    documentation: true
-    testing: false
-  code_proportion:
-    ai_generated_percent: 3
-    ai_assisted_percent: 8
-    human_only_percent: 89
-    method: self_reported
-declaration:
-  declared_by: Development Team Lead
-  date: "2026-02-10"
-`,
-  },
-  {
-    key: "late-stage",
-    label: "Late-Stage",
-    description: "AI used only in late development stages",
-    category: "No / Minimal AI",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: payment-gateway
-  content_type: software
-  repository: https://github.com/acme/payment-gw
-  version: "2.5.0"
-  license: MIT
-ai_usage:
-  used: true
-  summary: Claude was brought in late to help with integration tests and documentation after core development was complete.
-  level: minimal
-  tools:
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Integration test scaffolding and README updates
-  scope:
-    testing: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 5
-    ai_assisted_percent: 10
-    human_only_percent: 85
-    method: self_reported
-declaration:
-  declared_by: Sarah Kim
-  date: "2026-03-05"
-`,
-  },
-  {
-    key: "review-only",
-    label: "Code Review Only",
-    description: "AI used strictly for reviewing pull requests",
-    category: "No / Minimal AI",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: billing-api
-  content_type: software
-  repository: https://github.com/acme/billing-api
-  version: "5.1.0"
-  license: MIT
-ai_usage:
-  used: true
-  summary: AI was used exclusively for reviewing pull requests. No code was generated or suggested by AI tools. All code was written by the development team.
-  level: minimal
-  tools:
-    - name: CodeRabbit
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Automated pull request review
-  scope:
-    code_generation: false
-    code_completion: false
-    code_review: true
-    testing: false
-    documentation: false
-  code_proportion:
-    ai_generated_percent: 0
-    ai_assisted_percent: 5
-    human_only_percent: 95
-    method: self_reported
-declaration:
-  declared_by: Engineering Manager
-  date: "2026-02-12"
-`,
-  },
-  {
-    key: "accessibility",
-    label: "Accessibility Audit",
-    description: "AI used for accessibility testing and ARIA fixes only",
-    category: "No / Minimal AI",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: patient-portal
-  content_type: software
-  repository: https://github.com/healthorg/patient-portal
-  version: "3.4.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: AI tools were used in a focused accessibility sprint to identify WCAG violations, suggest ARIA attribute corrections, and improve screen reader compatibility. No feature code was generated by AI.
-  level: minimal
-  tools:
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Accessibility audit and ARIA attribute suggestions
-  scope:
-    code_generation: false
-    code_review: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 2
-    ai_assisted_percent: 6
-    human_only_percent: 92
-    method: self_reported
-declaration:
-  declared_by: Frontend Lead
-  date: "2026-03-12"
-`,
-  },
-  // --- Software Projects ---
-  {
-    key: "web",
-    label: "Web App",
-    description: "React dashboard with Copilot for tests",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: sales-dashboard
-  content_type: software
-  repository: https://github.com/acme/sales-dashboard
-  version: "3.0.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: GitHub Copilot was used for writing unit tests and some React component boilerplate.
-  level: moderate
-  tools:
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - Test generation and component scaffolding
+      purpose:
+        - Driver boilerplate and protocol stub generation
   scope:
     code_generation: true
-    testing: true
-    documentation: false
+    documentation: true
   code_proportion:
-    ai_generated_percent: 15
-    ai_assisted_percent: 25
-    human_only_percent: 60
+    ai_generated_percent: 10
+    ai_assisted_percent: 12
+    human_only_percent: 78
     method: self_reported
 declaration:
-  declared_by: Alex Chen
-  date: "2026-02-20"
+  declared_by: Firmware Lead
+  date: "2026-01-18"
+  reviewed_by: Safety Engineer
+  review_date: "2026-01-17"
 `,
   },
   {
     key: "opensource",
     label: "Open Source",
     description: "Popular library with AI used for CI and tests only",
-    category: "Software Projects",
+    category: "Software",
+    level: "minimal",
+    tags: ["open-source", "library", "copilot"],
     yaml: `schema_version: "1.0.0"
 project:
   name: quickcsv
@@ -262,12 +145,12 @@ ai_usage:
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - CI configuration and test scaffolding
     - name: Claude
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Documentation examples
   scope:
     code_generation: false
@@ -288,157 +171,51 @@ declaration:
 `,
   },
   {
-    key: "mobile",
-    label: "Mobile App",
-    description: "React Native app with AI-generated UI components",
-    category: "Software Projects",
+    key: "web",
+    label: "Web App",
+    description: "React dashboard with Copilot for tests",
+    category: "Software",
+    level: "moderate",
+    tags: ["react", "dashboard", "copilot"],
     yaml: `schema_version: "1.0.0"
 project:
-  name: mealtrack
+  name: sales-dashboard
   content_type: software
-  repository: https://github.com/healthapps/mealtrack
-  version: "2.0.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: AI agent was used to generate React Native UI components and REST API integration code. Business logic and data models were written by the team.
-  level: significant
-  tools:
-    - name: Cursor
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - UI component and API integration code generation
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - Code completion during development
-  scope:
-    code_generation: true
-    code_completion: true
-    testing: true
-  code_proportion:
-    ai_generated_percent: 35
-    ai_assisted_percent: 25
-    human_only_percent: 40
-    method: self_reported
-declaration:
-  declared_by: Mobile Team Lead
-  date: "2026-02-18"
-`,
-  },
-  {
-    key: "research",
-    label: "Research",
-    description: "Genome analysis with local Ollama",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: genome-analyzer
-  content_type: software
-  repository: https://gitlab.com/biolab/genome-analyzer
-  version: "0.4.0"
-  license: GPL-3.0
-ai_usage:
-  used: true
-  summary: Ollama (local CodeLlama) was used for writing parsing utilities and documentation strings.
-  level: minimal
-  tools:
-    - name: Ollama
-      type: model_runner
-      version: "0.5.x"
-      hosting: local_offline
-      purpose: 
-        - Code completion for parsing routines
-  scope:
-    code_completion: true
-    documentation: true
-declaration:
-  declared_by: Dr. Maria Lopez
-  date: "2026-03-01"
-`,
-  },
-  {
-    key: "student",
-    label: "Student Project",
-    description: "University coursework with AI as a learning aid",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: sorting-visualizer
-  content_type: software
-  repository: https://github.com/jdoe-student/sorting-viz
-  version: "1.0.0"
-  license: MIT
-ai_usage:
-  used: true
-  summary: AI was used as a learning aid during development. ChatGPT helped explain algorithms and debug issues. All code was typed and adapted by the student after understanding the concepts.
-  level: moderate
-  tools:
-    - name: ChatGPT
-      type: assistant
-      version: "4o"
-      hosting: cloud_vendor
-      purpose: 
-        - Learning aid, concept explanation, and debugging help
-  scope:
-    code_generation: true
-    debugging: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 10
-    ai_assisted_percent: 40
-    human_only_percent: 50
-    method: self_reported
-declaration:
-  declared_by: Jordan Doe
-  date: "2026-03-01"
-`,
-  },
-  {
-    key: "devops",
-    label: "Infrastructure",
-    description: "Terraform and Kubernetes configs with AI assistance",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: platform-infra
-  content_type: software
-  repository: https://github.com/cloudteam/platform-infra
+  repository: https://github.com/acme/sales-dashboard
   version: "3.0.0"
   license: Apache-2.0
 ai_usage:
   used: true
-  summary: AI tools assisted with writing Terraform modules and Kubernetes manifests. All infrastructure code was reviewed and tested in staging before production deployment.
+  summary: GitHub Copilot was used for writing unit tests and some React component boilerplate.
   level: moderate
   tools:
     - name: GitHub Copilot
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
-        - Terraform and Kubernetes manifest generation
+      purpose:
+        - Test generation and component scaffolding
   scope:
     code_generation: true
-    infrastructure: true
-    documentation: true
+    testing: true
+    documentation: false
   code_proportion:
-    ai_generated_percent: 20
-    ai_assisted_percent: 30
-    human_only_percent: 50
+    ai_generated_percent: 15
+    ai_assisted_percent: 25
+    human_only_percent: 60
     method: self_reported
 declaration:
-  declared_by: Platform Engineering Lead
-  date: "2026-03-08"
+  declared_by: Alex Chen
+  date: "2026-02-20"
 `,
   },
   {
     key: "api",
     label: "API / Backend",
     description: "REST API with AI-generated endpoint handlers",
-    category: "Software Projects",
+    category: "Software",
+    level: "moderate",
+    tags: ["rest-api", "backend", "copilot"],
     yaml: `schema_version: "1.0.0"
 project:
   name: inventory-api
@@ -455,7 +232,7 @@ ai_usage:
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Endpoint scaffolding and query generation
   scope:
     code_generation: true
@@ -472,132 +249,12 @@ declaration:
 `,
   },
   {
-    key: "game",
-    label: "Game Dev",
-    description: "Indie game with AI-generated art and dialogue",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: verdant-quest
-  content_type: software
-  repository: https://github.com/pixelforge/verdant-quest
-  version: "1.0.0"
-  license: proprietary
-ai_usage:
-  used: true
-  summary: AI tools generated concept art, NPC dialogue trees, and procedural level layouts. Game engine code, physics, and core mechanics were hand-written by the development team.
-  level: significant
-  tools:
-    - name: Midjourney
-      type: standalone
-      version: "6"
-      hosting: cloud_vendor
-      purpose: 
-        - Concept art and sprite generation
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - NPC dialogue writing and quest design
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - Shader and utility code completion
-  scope:
-    code_generation: true
-    code_completion: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 25
-    ai_assisted_percent: 20
-    human_only_percent: 55
-    method: self_reported
-declaration:
-  declared_by: Studio Director
-  date: "2026-01-28"
-`,
-  },
-  {
-    key: "pipeline",
-    label: "Data Pipeline",
-    description: "ETL pipeline with AI-generated SQL transformations",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: analytics-etl
-  content_type: software
-  repository: https://github.com/dataeng/analytics-etl
-  version: "1.5.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: AI assisted with writing SQL transformation queries and Airflow DAG configurations. Data quality checks and pipeline monitoring were built by the data engineering team.
-  level: moderate
-  tools:
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - SQL query generation and DAG scaffolding
-  scope:
-    code_generation: true
-    infrastructure: true
-  code_proportion:
-    ai_generated_percent: 18
-    ai_assisted_percent: 22
-    human_only_percent: 60
-    method: self_reported
-declaration:
-  declared_by: Data Engineering Lead
-  date: "2026-03-18"
-`,
-  },
-  {
-    key: "embedded",
-    label: "Embedded / IoT",
-    description: "IoT sensor firmware with AI-generated driver boilerplate",
-    category: "Software Projects",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: enviro-sensor
-  content_type: software
-  repository: https://github.com/iotsys/enviro-sensor
-  version: "1.1.0"
-  license: GPL-3.0
-ai_usage:
-  used: true
-  summary: AI was used to generate peripheral driver boilerplate and communication protocol stubs. Sensor calibration logic and safety-critical interrupt handlers were written and reviewed by embedded engineers.
-  level: minimal
-  tools:
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - Driver boilerplate and protocol stub generation
-  scope:
-    code_generation: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 10
-    ai_assisted_percent: 12
-    human_only_percent: 78
-    method: self_reported
-declaration:
-  declared_by: Firmware Lead
-  date: "2026-01-18"
-  reviewed_by: Safety Engineer
-  review_date: "2026-01-17"
-`,
-  },
-  {
     key: "ecommerce",
     label: "E-commerce",
     description: "Online store with AI-generated product descriptions",
-    category: "Software Projects",
+    category: "Software",
+    level: "moderate",
+    tags: ["ecommerce", "react", "chatgpt"],
     yaml: `schema_version: "1.0.0"
 project:
   name: artisan-market
@@ -614,13 +271,13 @@ ai_usage:
       type: assistant
       version: "4o"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Product description generation
     - name: GitHub Copilot
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Code completion for recommendation logic
   scope:
     code_generation: true
@@ -637,53 +294,144 @@ declaration:
 `,
   },
   {
-    key: "education",
-    label: "Education Platform",
-    description: "LMS with AI-generated quizzes and lesson summaries",
-    category: "Software Projects",
+    key: "pipeline",
+    label: "Data Pipeline",
+    description: "ETL pipeline with AI-generated SQL transformations",
+    category: "Software",
+    level: "moderate",
+    tags: ["etl", "sql", "airflow"],
     yaml: `schema_version: "1.0.0"
 project:
-  name: learnhub
+  name: analytics-etl
   content_type: software
-  repository: https://github.com/edtech/learnhub
-  version: "3.0.0"
+  repository: https://github.com/dataeng/analytics-etl
+  version: "1.5.0"
   license: Apache-2.0
 ai_usage:
   used: true
-  summary: AI generated quiz questions from course material and produced lesson summaries for students. The LMS platform, grading engine, and student portal were developed by the engineering team.
+  summary: AI assisted with writing SQL transformation queries and Airflow DAG configurations. Data quality checks and pipeline monitoring were built by the data engineering team.
   level: moderate
   tools:
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Quiz generation and lesson summarization
     - name: GitHub Copilot
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
+        - SQL query generation and DAG scaffolding
+  scope:
+    code_generation: true
+    infrastructure: true
+  code_proportion:
+    ai_generated_percent: 18
+    ai_assisted_percent: 22
+    human_only_percent: 60
+    method: self_reported
+declaration:
+  declared_by: Data Engineering Lead
+  date: "2026-03-18"
+`,
+  },
+  {
+    key: "mobile",
+    label: "Mobile App",
+    description: "React Native app with AI-generated UI components",
+    category: "Software",
+    level: "significant",
+    tags: ["react-native", "mobile", "cursor"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: mealtrack
+  content_type: software
+  repository: https://github.com/healthapps/mealtrack
+  version: "2.0.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: AI agent was used to generate React Native UI components and REST API integration code. Business logic and data models were written by the team.
+  level: significant
+  tools:
+    - name: Cursor
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - UI component and API integration code generation
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
         - Code completion during development
+  scope:
+    code_generation: true
+    code_completion: true
+    testing: true
+  code_proportion:
+    ai_generated_percent: 35
+    ai_assisted_percent: 25
+    human_only_percent: 40
+    method: self_reported
+declaration:
+  declared_by: Mobile Team Lead
+  date: "2026-02-18"
+`,
+  },
+  {
+    key: "game",
+    label: "Game Dev",
+    description: "Indie game with AI-generated art and dialogue",
+    category: "Software",
+    level: "significant",
+    tags: ["game", "indie", "midjourney"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: verdant-quest
+  content_type: software
+  repository: https://github.com/pixelforge/verdant-quest
+  version: "1.0.0"
+  license: proprietary
+ai_usage:
+  used: true
+  summary: AI tools generated concept art, NPC dialogue trees, and procedural level layouts. Game engine code, physics, and core mechanics were hand-written by the development team.
+  level: significant
+  tools:
+    - name: Midjourney
+      type: standalone
+      version: "6"
+      hosting: cloud_vendor
+      purpose:
+        - Concept art and sprite generation
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - NPC dialogue writing and quest design
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Shader and utility code completion
   scope:
     code_generation: true
     code_completion: true
     documentation: true
   code_proportion:
-    ai_generated_percent: 15
+    ai_generated_percent: 25
     ai_assisted_percent: 20
-    human_only_percent: 65
+    human_only_percent: 55
     method: self_reported
 declaration:
-  declared_by: CTO
-  date: "2026-03-22"
+  declared_by: Studio Director
+  date: "2026-01-28"
 `,
   },
-  // --- High AI Involvement ---
   {
     key: "startup",
     label: "Startup MVP",
     description: "Fast-built prototype with high AI proportion",
-    category: "High AI Involvement",
+    category: "Software",
+    level: "extensive",
+    tags: ["startup", "mvp", "cursor"],
     yaml: `schema_version: "1.0.0"
 project:
   name: waitlist-app
@@ -699,12 +447,12 @@ ai_usage:
     - name: Cursor
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Full-stack code generation
     - name: Claude
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Architecture planning and code review
   scope:
     code_generation: true
@@ -723,135 +471,15 @@ declaration:
   date: "2026-03-20"
 `,
   },
-  {
-    key: "legacy",
-    label: "Legacy Migration",
-    description: "COBOL to Python migration with AI translation",
-    category: "High AI Involvement",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: claims-processor-v2
-  content_type: software
-  repository: https://gitlab.com/insuranceco/claims-processor-v2
-  version: "2.0.0"
-  license: proprietary
-ai_usage:
-  used: true
-  summary: AI tools were used to translate legacy COBOL business rules into Python and to generate unit tests for the migrated code. All translated code was reviewed and tested against the original system.
-  level: significant
-  tools:
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - COBOL to Python translation and test generation
-  scope:
-    code_generation: true
-    testing: true
-    refactoring: true
-  code_proportion:
-    ai_generated_percent: 40
-    ai_assisted_percent: 30
-    human_only_percent: 30
-    method: tool_measured
-declaration:
-  declared_by: Migration Team
-  date: "2026-01-25"
-  reviewed_by: QA Lead
-  review_date: "2026-01-24"
-`,
-  },
-  {
-    key: "freelancer",
-    label: "Freelancer",
-    description: "Solo developer using AI extensively across all tasks",
-    category: "High AI Involvement",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: booking-widget
-  content_type: software
-  repository: https://github.com/freelance-dev/booking-widget
-  version: "1.0.0"
-  license: MIT
-ai_usage:
-  used: true
-  summary: Solo freelance developer used AI tools throughout the entire project lifecycle, from initial architecture through deployment scripts. All generated code was reviewed and tested before delivery to the client.
-  level: extensive
-  tools:
-    - name: Cursor
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Full-stack development and architecture planning
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Code review and documentation writing
-  scope:
-    code_generation: true
-    code_completion: true
-    code_review: true
-    documentation: true
-    testing: true
-    infrastructure: true
-    debugging: true
-  code_proportion:
-    ai_generated_percent: 60
-    ai_assisted_percent: 20
-    human_only_percent: 20
-    method: self_reported
-declaration:
-  declared_by: Freelance Developer
-  date: "2026-03-25"
-`,
-  },
-  {
-    key: "pair-programming",
-    label: "Pair Programming",
-    description: "AI used as an interactive coding partner throughout",
-    category: "High AI Involvement",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: workflow-engine
-  content_type: software
-  repository: https://github.com/devteam/workflow-engine
-  version: "1.2.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: The developer used AI as a pair programming partner for the entire project. Code was written interactively through conversation, with the developer guiding architecture decisions and the AI suggesting implementations that were iterated on together.
-  level: significant
-  tools:
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Interactive pair programming and design discussion
-  scope:
-    code_generation: true
-    code_completion: true
-    code_review: true
-    documentation: true
-    testing: true
-    debugging: true
-    refactoring: true
-  code_proportion:
-    ai_generated_percent: 45
-    ai_assisted_percent: 35
-    human_only_percent: 20
-    method: self_reported
-declaration:
-  declared_by: Lead Developer
-  date: "2026-03-15"
-`,
-  },
-  // --- Non-Software Content Types ---
+
+  // ──── Data & Research ────
   {
     key: "dataset",
     label: "Dataset",
     description: "Research dataset with AI-assisted cleaning scripts",
-    category: "Non-Software",
+    category: "Data & Research",
+    level: "moderate",
+    tags: ["dataset", "data-cleaning", "open-data"],
     yaml: `schema_version: "1.0.0"
 project:
   name: urban-mobility-survey
@@ -867,7 +495,7 @@ ai_usage:
     - name: Claude
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Data cleaning script generation and annotation guidelines
   scope:
     code_generation: true
@@ -883,10 +511,130 @@ declaration:
 `,
   },
   {
+    key: "ml-model",
+    label: "ML Model",
+    description: "Demand forecasting model with AI-assisted training scripts",
+    category: "Data & Research",
+    level: "moderate",
+    tags: ["ml", "forecasting", "python"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: demand-forecaster
+  content_type: model
+  repository: https://github.com/retailco/demand-forecaster
+  version: "1.3.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: AI tools assisted with model architecture search and hyperparameter tuning scripts. Training pipeline and evaluation framework were written by the ML team.
+  level: moderate
+  tools:
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Training script boilerplate and experiment tracking setup
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Architecture comparison and documentation
+  scope:
+    code_generation: true
+    code_completion: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 15
+    ai_assisted_percent: 25
+    human_only_percent: 60
+    method: self_reported
+declaration:
+  declared_by: ML Team Lead
+  date: "2026-02-22"
+`,
+  },
+  {
+    key: "research",
+    label: "Research",
+    description: "Genome analysis with local Ollama",
+    category: "Data & Research",
+    level: "minimal",
+    tags: ["genomics", "python", "ollama"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: genome-analyzer
+  content_type: software
+  repository: https://gitlab.com/biolab/genome-analyzer
+  version: "0.4.0"
+  license: GPL-3.0
+ai_usage:
+  used: true
+  summary: Ollama (local CodeLlama) was used for writing parsing utilities and documentation strings.
+  level: minimal
+  tools:
+    - name: Ollama
+      type: model_runner
+      version: "0.5.x"
+      hosting: local_offline
+      purpose:
+        - Code completion for parsing routines
+  scope:
+    code_completion: true
+    documentation: true
+declaration:
+  declared_by: Dr. Maria Lopez
+  date: "2026-03-01"
+`,
+  },
+  {
+    key: "student",
+    label: "Student Project",
+    description: "University coursework with AI as a learning aid",
+    category: "Data & Research",
+    level: "moderate",
+    tags: ["student", "learning", "chatgpt"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: sorting-visualizer
+  content_type: software
+  repository: https://github.com/jdoe-student/sorting-viz
+  version: "1.0.0"
+  license: MIT
+ai_usage:
+  used: true
+  summary: AI was used as a learning aid during development. ChatGPT helped explain algorithms and debug issues. All code was typed and adapted by the student after understanding the concepts.
+  level: moderate
+  tools:
+    - name: ChatGPT
+      type: assistant
+      version: "4o"
+      hosting: cloud_vendor
+      purpose:
+        - Learning aid, concept explanation, and debugging help
+  scope:
+    code_generation: true
+    debugging: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 10
+    ai_assisted_percent: 40
+    human_only_percent: 50
+    method: self_reported
+declaration:
+  declared_by: Jordan Doe
+  date: "2026-03-01"
+`,
+  },
+
+  // ──── Content & Creative ────
+  {
     key: "document",
     label: "Document",
     description: "Policy report with AI-assisted drafting",
-    category: "Non-Software",
+    category: "Content & Creative",
+    level: "moderate",
+    tags: ["report", "sustainability", "chatgpt"],
     yaml: `schema_version: "1.0.0"
 project:
   name: annual-sustainability-report
@@ -902,7 +650,7 @@ ai_usage:
       type: assistant
       version: "4o"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Draft generation and proofreading
   scope:
     documentation: true
@@ -920,7 +668,9 @@ declaration:
     key: "media",
     label: "Media / Creative",
     description: "Brand identity kit with AI-generated visuals",
-    category: "Non-Software",
+    category: "Content & Creative",
+    level: "significant",
+    tags: ["branding", "design", "midjourney"],
     yaml: `schema_version: "1.0.0"
 project:
   name: brand-identity-kit
@@ -936,13 +686,13 @@ ai_usage:
       type: standalone
       version: "6"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Logo concept generation and visual exploration
     - name: ChatGPT
       type: assistant
       version: "4o"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Brand naming brainstorming and copywriting drafts
   code_proportion:
     ai_generated_percent: 30
@@ -955,52 +705,12 @@ declaration:
 `,
   },
   {
-    key: "ml-model",
-    label: "ML Model",
-    description: "Demand forecasting model with AI-assisted training scripts",
-    category: "Non-Software",
-    yaml: `schema_version: "1.0.0"
-project:
-  name: demand-forecaster
-  content_type: model
-  repository: https://github.com/retailco/demand-forecaster
-  version: "1.3.0"
-  license: Apache-2.0
-ai_usage:
-  used: true
-  summary: AI tools assisted with model architecture search and hyperparameter tuning scripts. Training pipeline and evaluation framework were written by the ML team.
-  level: moderate
-  tools:
-    - name: GitHub Copilot
-      type: assistant
-      version: "1.x"
-      hosting: cloud_vendor
-      purpose: 
-        - Training script boilerplate and experiment tracking setup
-    - name: Claude
-      type: assistant
-      hosting: cloud_vendor
-      purpose: 
-        - Architecture comparison and documentation
-  scope:
-    code_generation: true
-    code_completion: true
-    documentation: true
-  code_proportion:
-    ai_generated_percent: 15
-    ai_assisted_percent: 25
-    human_only_percent: 60
-    method: self_reported
-declaration:
-  declared_by: ML Team Lead
-  date: "2026-02-22"
-`,
-  },
-  {
     key: "translation",
     label: "Translation",
     description: "Multilingual documentation translated with AI assistance",
-    category: "Non-Software",
+    category: "Content & Creative",
+    level: "significant",
+    tags: ["i18n", "localization", "deepl"],
     yaml: `schema_version: "1.0.0"
 project:
   name: product-docs-i18n
@@ -1017,13 +727,13 @@ ai_usage:
       type: standalone
       version: "3"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Initial translation drafts
     - name: ChatGPT
       type: assistant
       version: "4o"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Context-aware terminology and phrasing adjustments
   scope:
     documentation: true
@@ -1037,12 +747,54 @@ declaration:
   date: "2026-02-14"
 `,
   },
-  // --- Compliance & Governance ---
+
+  // ──── DevOps & Infrastructure ────
+  {
+    key: "devops",
+    label: "Infrastructure",
+    description: "Terraform and Kubernetes configs with AI assistance",
+    category: "DevOps & Infrastructure",
+    level: "moderate",
+    tags: ["terraform", "kubernetes", "copilot"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: platform-infra
+  content_type: software
+  repository: https://github.com/cloudteam/platform-infra
+  version: "3.0.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: AI tools assisted with writing Terraform modules and Kubernetes manifests. All infrastructure code was reviewed and tested in staging before production deployment.
+  level: moderate
+  tools:
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Terraform and Kubernetes manifest generation
+  scope:
+    code_generation: true
+    infrastructure: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 20
+    ai_assisted_percent: 30
+    human_only_percent: 50
+    method: self_reported
+declaration:
+  declared_by: Platform Engineering Lead
+  date: "2026-03-08"
+`,
+  },
   {
     key: "security",
     label: "Security Audit",
     description: "Vulnerability scanner with AI-generated analysis rules",
-    category: "Compliance & Governance",
+    category: "DevOps & Infrastructure",
+    level: "minimal",
+    tags: ["security", "static-analysis"],
     yaml: `schema_version: "1.0.0"
 project:
   name: vuln-scanner
@@ -1058,7 +810,7 @@ ai_usage:
     - name: Claude
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Static analysis rule generation and report template drafting
   scope:
     code_generation: true
@@ -1074,47 +826,52 @@ declaration:
 `,
   },
   {
-    key: "highrisk",
-    label: "High-Risk AI",
-    description: "Medical scan analysis with EU AI Act classification",
-    category: "Compliance & Governance",
+    key: "accessibility",
+    label: "Accessibility Audit",
+    description: "AI used for accessibility testing and ARIA fixes only",
+    category: "DevOps & Infrastructure",
+    level: "minimal",
+    tags: ["a11y", "wcag", "frontend"],
     yaml: `schema_version: "1.0.0"
 project:
-  name: radiology-assist
+  name: patient-portal
   content_type: software
-  version: "1.2.0"
-  license: proprietary
+  repository: https://github.com/healthorg/patient-portal
+  version: "3.4.0"
+  license: Apache-2.0
 ai_usage:
   used: true
-  summary: AI model used for preliminary scan analysis. All outputs reviewed by qualified radiologist.
-  level: extensive
+  summary: AI tools were used in a focused accessibility sprint to identify WCAG violations, suggest ARIA attribute corrections, and improve screen reader compatibility. No feature code was generated by AI.
+  level: minimal
   tools:
-    - name: RadiologyNet
-      type: standalone
-      version: "2.0"
-      hosting: local_offline
-      purpose: 
-        - Preliminary scan classification
-compliance_eu_ai_act:
-  classification: high_risk
-  technical_documentation_url: https://example.com/technical-file
-  declaration_of_conformity_url: https://example.com/technical-file
-  human_oversight: All outputs reviewed by qualified radiologist
-governance:
-  responsible_officer: Dr. Hans Mueller
-  ethics_review_status: approved
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Accessibility audit and ARIA attribute suggestions
+  scope:
+    code_generation: false
+    code_review: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 2
+    ai_assisted_percent: 6
+    human_only_percent: 92
+    method: self_reported
 declaration:
-  declared_by: Dr. Hans Mueller
-  date: "2026-01-10"
-  reviewed_by: Ethics Board
-  review_date: "2026-01-08"
+  declared_by: Frontend Lead
+  date: "2026-03-12"
 `,
   },
+
+  // ──── Enterprise & Compliance ────
   {
     key: "enterprise",
     label: "Enterprise",
     description: "Enterprise-level with governance and DPIA",
-    category: "Compliance & Governance",
+    category: "Enterprise & Compliance",
+    level: "moderate",
+    tags: ["enterprise", "governance", "cursor"],
     yaml: `schema_version: "1.0.0"
 project:
   name: customer-insights-platform
@@ -1130,7 +887,7 @@ ai_usage:
     - name: Cursor
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Code generation for data pipelines
   scope:
     code_generation: true
@@ -1160,7 +917,9 @@ declaration:
     key: "government",
     label: "Government",
     description: "Public sector project with strict transparency requirements",
-    category: "Compliance & Governance",
+    category: "Enterprise & Compliance",
+    level: "minimal",
+    tags: ["public-sector", "eu-ai-act", "copilot"],
     yaml: `schema_version: "1.0.0"
 project:
   name: citizen-services-portal
@@ -1177,7 +936,7 @@ ai_usage:
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Form validation boilerplate and accessibility checks
   scope:
     code_generation: true
@@ -1202,10 +961,51 @@ declaration:
 `,
   },
   {
+    key: "highrisk",
+    label: "High-Risk AI",
+    description: "Medical scan analysis with EU AI Act classification",
+    category: "Enterprise & Compliance",
+    level: "extensive",
+    tags: ["healthcare", "eu-ai-act", "high-risk"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: radiology-assist
+  content_type: software
+  version: "1.2.0"
+  license: proprietary
+ai_usage:
+  used: true
+  summary: AI model used for preliminary scan analysis. All outputs reviewed by qualified radiologist.
+  level: extensive
+  tools:
+    - name: RadiologyNet
+      type: standalone
+      version: "2.0"
+      hosting: local_offline
+      purpose:
+        - Preliminary scan classification
+compliance_eu_ai_act:
+  classification: high_risk
+  technical_documentation_url: https://example.com/technical-file
+  declaration_of_conformity_url: https://example.com/technical-file
+  human_oversight: All outputs reviewed by qualified radiologist
+governance:
+  responsible_officer: Dr. Hans Mueller
+  ethics_review_status: approved
+declaration:
+  declared_by: Dr. Hans Mueller
+  date: "2026-01-10"
+  reviewed_by: Ethics Board
+  review_date: "2026-01-08"
+`,
+  },
+  {
     key: "comprehensive",
     label: "Comprehensive",
     description: "Full-featured declaration with all sections",
-    category: "Compliance & Governance",
+    category: "Enterprise & Compliance",
+    level: "significant",
+    tags: ["full-lifecycle", "governance", "multi-tool"],
     yaml: `schema_version: "1.0.0"
 project:
   name: smart-scheduler
@@ -1222,18 +1022,18 @@ ai_usage:
       type: assistant
       version: "1.x"
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Code completion and generation
     - name: Claude
       type: assistant
       hosting: cloud_vendor
-      purpose: 
+      purpose:
         - Architecture review and documentation
     - name: Ollama
       type: model_runner
       version: "0.5.x"
       hosting: local_offline
-      purpose: 
+      purpose:
         - Local code review
   scope:
     code_generation: true
@@ -1261,6 +1061,308 @@ declaration:
   date: "2026-03-10"
   reviewed_by: Tech Lead
   review_date: "2026-03-09"
+`,
+  },
+
+  // ──── Development Practices ────
+  {
+    key: "pair-programming",
+    label: "Pair Programming",
+    description: "AI used as an interactive coding partner throughout",
+    category: "Development Practices",
+    level: "significant",
+    tags: ["pair-programming", "full-lifecycle", "workflow"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: workflow-engine
+  content_type: software
+  repository: https://github.com/devteam/workflow-engine
+  version: "1.2.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: The developer used AI as a pair programming partner for the entire project. Code was written interactively through conversation, with the developer guiding architecture decisions and the AI suggesting implementations that were iterated on together.
+  level: significant
+  tools:
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Interactive pair programming and design discussion
+  scope:
+    code_generation: true
+    code_completion: true
+    code_review: true
+    documentation: true
+    testing: true
+    debugging: true
+    refactoring: true
+  code_proportion:
+    ai_generated_percent: 45
+    ai_assisted_percent: 35
+    human_only_percent: 20
+    method: self_reported
+declaration:
+  declared_by: Lead Developer
+  date: "2026-03-15"
+`,
+  },
+  {
+    key: "review-only",
+    label: "Code Review Only",
+    description: "AI used strictly for reviewing pull requests",
+    category: "Development Practices",
+    level: "minimal",
+    tags: ["code-review", "api", "coderabbit"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: billing-api
+  content_type: software
+  repository: https://github.com/acme/billing-api
+  version: "5.1.0"
+  license: MIT
+ai_usage:
+  used: true
+  summary: AI was used exclusively for reviewing pull requests. No code was generated or suggested by AI tools. All code was written by the development team.
+  level: minimal
+  tools:
+    - name: CodeRabbit
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Automated pull request review
+  scope:
+    code_generation: false
+    code_completion: false
+    code_review: true
+    testing: false
+    documentation: false
+  code_proportion:
+    ai_generated_percent: 0
+    ai_assisted_percent: 5
+    human_only_percent: 95
+    method: self_reported
+declaration:
+  declared_by: Engineering Manager
+  date: "2026-02-12"
+`,
+  },
+  {
+    key: "freelancer",
+    label: "Freelancer",
+    description: "Solo developer using AI extensively across all tasks",
+    category: "Development Practices",
+    level: "extensive",
+    tags: ["solo-dev", "fullstack", "cursor"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: booking-widget
+  content_type: software
+  repository: https://github.com/freelance-dev/booking-widget
+  version: "1.0.0"
+  license: MIT
+ai_usage:
+  used: true
+  summary: Solo freelance developer used AI tools throughout the entire project lifecycle, from initial architecture through deployment scripts. All generated code was reviewed and tested before delivery to the client.
+  level: extensive
+  tools:
+    - name: Cursor
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Full-stack development and architecture planning
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Code review and documentation writing
+  scope:
+    code_generation: true
+    code_completion: true
+    code_review: true
+    documentation: true
+    testing: true
+    infrastructure: true
+    debugging: true
+  code_proportion:
+    ai_generated_percent: 60
+    ai_assisted_percent: 20
+    human_only_percent: 20
+    method: self_reported
+declaration:
+  declared_by: Freelance Developer
+  date: "2026-03-25"
+`,
+  },
+  {
+    key: "legacy",
+    label: "Legacy Migration",
+    description: "COBOL to Python migration with AI translation",
+    category: "Development Practices",
+    level: "significant",
+    tags: ["migration", "cobol", "python"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: claims-processor-v2
+  content_type: software
+  repository: https://gitlab.com/insuranceco/claims-processor-v2
+  version: "2.0.0"
+  license: proprietary
+ai_usage:
+  used: true
+  summary: AI tools were used to translate legacy COBOL business rules into Python and to generate unit tests for the migrated code. All translated code was reviewed and tested against the original system.
+  level: significant
+  tools:
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - COBOL to Python translation and test generation
+  scope:
+    code_generation: true
+    testing: true
+    refactoring: true
+  code_proportion:
+    ai_generated_percent: 40
+    ai_assisted_percent: 30
+    human_only_percent: 30
+    method: tool_measured
+declaration:
+  declared_by: Migration Team
+  date: "2026-01-25"
+  reviewed_by: QA Lead
+  review_date: "2026-01-24"
+`,
+  },
+  {
+    key: "late-stage",
+    label: "Late-Stage",
+    description: "AI used only in late development stages",
+    category: "Development Practices",
+    level: "minimal",
+    tags: ["testing", "docs-only", "fintech"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: payment-gateway
+  content_type: software
+  repository: https://github.com/acme/payment-gw
+  version: "2.5.0"
+  license: MIT
+ai_usage:
+  used: true
+  summary: Claude was brought in late to help with integration tests and documentation after core development was complete.
+  level: minimal
+  tools:
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Integration test scaffolding and README updates
+  scope:
+    testing: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 5
+    ai_assisted_percent: 10
+    human_only_percent: 85
+    method: self_reported
+declaration:
+  declared_by: Sarah Kim
+  date: "2026-03-05"
+`,
+  },
+  {
+    key: "human-first",
+    label: "Human-First",
+    description: "Core built by humans, AI used late for docs and formatting",
+    category: "Development Practices",
+    level: "minimal",
+    tags: ["docs-only", "copilot"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: fleet-manager
+  content_type: software
+  repository: https://github.com/transit-co/fleet-manager
+  version: "3.2.0"
+  license: MIT
+ai_usage:
+  used: true
+  summary: >
+    The core functionality of this project was designed and implemented
+    by the development team without the use of AI code generation tools.
+    In the later stages, AI-assisted tools were selectively used for
+    documentation drafting, boilerplate generation, and code formatting.
+    AI tools were not used to generate core logic, architecture,
+    algorithms, or primary feature implementations. All AI output was
+    reviewed, edited, and validated by developers before inclusion.
+    The development team is fully responsible for all code and
+    documentation in this repository.
+  level: minimal
+  tools:
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Documentation drafting and boilerplate generation
+  scope:
+    code_generation: false
+    code_completion: false
+    code_review: false
+    documentation: true
+    testing: false
+  code_proportion:
+    ai_generated_percent: 3
+    ai_assisted_percent: 8
+    human_only_percent: 89
+    method: self_reported
+declaration:
+  declared_by: Development Team Lead
+  date: "2026-02-10"
+`,
+  },
+  {
+    key: "education",
+    label: "Education Platform",
+    description: "LMS with AI-generated quizzes and lesson summaries",
+    category: "Development Practices",
+    level: "moderate",
+    tags: ["edtech", "lms", "copilot"],
+    yaml: `schema_version: "1.0.0"
+project:
+  name: learnhub
+  content_type: software
+  repository: https://github.com/edtech/learnhub
+  version: "3.0.0"
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: AI generated quiz questions from course material and produced lesson summaries for students. The LMS platform, grading engine, and student portal were developed by the engineering team.
+  level: moderate
+  tools:
+    - name: Claude
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - Quiz generation and lesson summarization
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Code completion during development
+  scope:
+    code_generation: true
+    code_completion: true
+    documentation: true
+  code_proportion:
+    ai_generated_percent: 15
+    ai_assisted_percent: 20
+    human_only_percent: 65
+    method: self_reported
+declaration:
+  declared_by: CTO
+  date: "2026-03-22"
 `,
   },
 ];
