@@ -33,8 +33,8 @@ function GeneratorContent() {
   }, [searchParams, loadPreset]);
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <div className="space-y-6 lg:col-span-2">
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+      <div className="space-y-6 lg:col-span-3">
         <h1 className="text-2xl font-bold">Declaration Generator</h1>
         <ProjectFields
           values={formData.project}
@@ -60,7 +60,7 @@ function GeneratorContent() {
           errors={errors}
         />
       </div>
-      <aside className="lg:col-span-1">
+      <aside className="lg:col-span-2">
         <SidebarPreview formData={formData} issues={issues} isValid={isValid} />
       </aside>
     </div>
