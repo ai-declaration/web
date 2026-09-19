@@ -1,0 +1,45 @@
+schema_version: "1.0.0"
+project:
+  name: aidecl-web
+  repository: https://github.com/ai-declaration/web
+  content_type: software
+  license: Apache-2.0
+ai_usage:
+  used: true
+  summary: >
+    The core functionality of this project was designed and implemented
+    by the development team without the use of AI code generation tools.
+    In the later stages, AI-assisted tools were selectively used for
+    documentation drafting, boilerplate generation, and code formatting.
+    AI tools were not used to generate core logic, architecture,
+    or primary feature implementations. All AI output was
+    reviewed, edited, and validated by developers before inclusion.
+  level: minimal
+  tools:
+    - name: Claude
+      vendor: Anthropic
+      type: assistant
+      hosting: cloud_vendor
+      purpose:
+        - code generation
+        - documentation
+      trains_on_data: false
+    - name: GitHub Copilot
+      type: assistant
+      version: "1.x"
+      hosting: cloud_vendor
+      purpose:
+        - Code completion during development
+  scope:
+    code_generation: true
+    code_completion: true
+    code_review: false
+    documentation: true
+    testing: false
+  activities:
+    - code_generation
+    - testing
+    - documentation
+declaration:
+  date: "2026-04-03"
+  declared_by: Faruk Diblen
