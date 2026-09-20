@@ -78,7 +78,7 @@ export default function CodeEditor({ value, onChange }: CodeEditorProps) {
           spellCheck={false}
         />
         <p className="text-right text-xs text-muted-foreground">
-          {value.length.toLocaleString()} / 500,000 characters
+          {value.length.toLocaleString("en-US")} / 500,000 characters
         </p>
       </CardContent>
     </Card>
