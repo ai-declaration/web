@@ -92,15 +92,15 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
     <nav aria-label="Example templates" className="space-y-4">
       {/* Category pills */}
       <div className="rounded-md border border-border bg-muted/30 p-3">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 block">
+        <span className="text-xs font-semibold text-muted-foreground mb-2 block">
           Category
         </span>
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => handleCategoryChange(cat)}
-              className={`text-xs font-medium px-2.5 py-1 rounded-md transition-colors ${
+              className={`text-sm font-medium px-3 py-1.5 rounded-md transition-colors ${
                 cat === activeCategory
                   ? "bg-primary text-primary-foreground"
                   : "bg-muted text-muted-foreground hover:text-foreground"
@@ -116,19 +116,19 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
       {availableTags.length > 0 && (
         <div className="rounded-md border border-border bg-muted/30 p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <span className="text-xs font-semibold text-muted-foreground">
               Tags
             </span>
             {activeTags.length > 0 && (
               <button
                 onClick={() => setActiveTags([])}
-                className="text-[10px] text-muted-foreground hover:text-foreground underline"
+                className="text-xs text-muted-foreground hover:text-foreground underline"
               >
                 Clear
               </button>
             )}
           </div>
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1.5">
             {availableTags.map((tag) => {
               const idx = tagColorIndex(tag);
               const isActive = activeTags.includes(tag);
@@ -137,7 +137,7 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
                 <button
                   key={tag}
                   onClick={() => toggleTag(tag)}
-                  className={`text-[11px] px-2 py-0.5 rounded-full border transition-colors ${colorClass}`}
+                  className={`text-[13px] px-2.5 py-1 rounded-full border transition-colors ${colorClass}`}
                 >
                   {tag}
                 </button>
@@ -155,7 +155,7 @@ export default function ExampleBrowser({ examples, selected, onSelect }: Example
           <div key={group.level} className="rounded-md border border-border p-3">
             <div className="flex items-center gap-1.5 mb-2">
               <span className={`inline-block w-2 h-2 rounded-full ${LEVEL_DOT_COLORS[group.level] ?? "bg-gray-400"}`} />
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-xs font-semibold text-muted-foreground">
                 {group.label}
               </span>
               <span className="text-[10px] text-muted-foreground/60 ml-auto">
