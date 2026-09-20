@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducer, useEffect, useCallback, useMemo } from "react";
+import { useReducer, useEffect, useState, useCallback, useMemo } from "react";
 import type { AideclDeclaration, AideclTool, FormErrors } from "@/lib/aidecl-types";
 
 type Action =
@@ -107,31 +107,38 @@ function reducer(state: AideclDeclaration, action: Action): AideclDeclaration {
 const STORAGE_KEY = "aidecl-form-draft";
 
 export function useAideclForm() {
-  const [formData, dispatch] = useReducer(reducer, initialState, () => {
-    if (typeof window === "undefined") return initialState;
+  const [formData, dispatch] = useReducer(reducer, initialState);
+  const [restored, setRestored] = useState(false);
+
+  // The draft has to be read after mount, not while rendering. The page is
+  // prerendered with an empty form, so pulling localStorage into the initial
+  // state makes the first client render disagree with the served HTML.
+  useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        return normalizeToFormModel(JSON.parse(saved));
+        dispatch({ type: "LOAD_PRESET", data: normalizeToFormModel(JSON.parse(saved)) });
       }
     } catch { /* ignore */ }
-    return initialState;
-  });
+    setRestored(true);
+  }, []);
 
   useEffect(() => {
+    if (!restored) return;
     if (!formData.signature?.declaration_date) {
       dispatch({ type: "SET_FIELD", path: "signature.declaration_date", value: new Date().toISOString().split("T")[0] });
     }
-  }, [formData.signature?.declaration_date]);
+  }, [restored, formData.signature?.declaration_date]);
 
   useEffect(() => {
+    if (!restored) return;
     const timeout = setTimeout(() => {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
       } catch { /* quota exceeded */ }
     }, 500);
     return () => clearTimeout(timeout);
-  }, [formData]);
+  }, [formData, restored]);
 
   const updateField = useCallback((path: string, value: unknown) => {
     if (path === "ai_usage.addTool") {
