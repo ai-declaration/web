@@ -169,7 +169,7 @@ export default function SidebarPreview({ formData, issues, isValid }: SidebarPre
               <line x1="12" y1="9" x2="12" y2="13" />
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
-            <span className={`text-xs font-semibold uppercase tracking-wide ${
+            <span className={`text-xs font-semibold ${
               issues.length > 2 ? "text-error" : "text-warning"
             }`}>
               {issues.length > 2 ? "Missing required fields" : "Incomplete"}
